@@ -24,14 +24,16 @@ LOCAL_C_INCLUDES       += $(LOCAL_PATH)
 LOCAL_C_INCLUDES       += $(LOCAL_PATH)/Dooby
 LOCAL_C_INCLUDES       += $(LOCAL_PATH)/ImGui
 LOCAL_C_INCLUDES       += $(LOCAL_PATH)/Includes
-LOCAL_C_INCLUDES       += $(LOCAL_PATH)/Includes/And64InlineHook
-LOCAL_C_INCLUDES       += $(LOCAL_PATH)/Includes/Substrate
+LOCAL_C_INCLUDES       += $(LOCAL_PATH)/And64InlineHook
+LOCAL_C_INCLUDES       += $(LOCAL_PATH)/Substrate
 LOCAL_C_INCLUDES       += $(LOCAL_PATH)/KittyMemory
+LOCAL_C_INCLUDES       += $(LOCAL_PATH)/Struct
 LOCAL_C_INCLUDES       += $(LOCAL_PATH)/Unity
 
 FILE_LIST               := $(wildcard $(LOCAL_PATH)/ImGui/*.c*)
 FILE_LIST               += $(wildcard $(LOCAL_PATH)/ImGui/backends/*.c*)
 FILE_LIST               += $(wildcard $(LOCAL_PATH)/xdl/*.c*)
+FILE_LIST               += $(wildcard $(LOCAL_PATH)/Struct/*.c*)
 FILE_LIST               += $(wildcard $(LOCAL_PATH)/KittyMemory/*.c*)
 FILE_LIST               += $(wildcard $(LOCAL_PATH)/Unity/*.c*)
 FILE_LIST              += $(wildcard $(LOCAL_PATH)/*.c*)
@@ -40,12 +42,12 @@ LOCAL_SRC_FILES        := $(FILE_LIST:$(LOCAL_PATH)/%=%)
 
 
 ifeq ($(TARGET_ARCH_ABI), arm64-v8a)
-    LOCAL_C_INCLUDES += $(LOCAL_PATH)/Includes/And64InlineHook
-    HOOK_SRC := $(wildcard $(LOCAL_PATH)/Includes/And64InlineHook/*.c*)
+    LOCAL_C_INCLUDES += $(LOCAL_PATH)/And64InlineHook
+    HOOK_SRC := $(wildcard $(LOCAL_PATH)/And64InlineHook/*.c*)
     LOCAL_SRC_FILES += $(HOOK_SRC:$(LOCAL_PATH)/%=%)
 else ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
-    LOCAL_C_INCLUDES += $(LOCAL_PATH)/Includes/Substrate
-    HOOK_SRC := $(wildcard $(LOCAL_PATH)/Includes/Substrate/*.c*)
+    LOCAL_C_INCLUDES += $(LOCAL_PATH)/Substrate
+    HOOK_SRC := $(wildcard $(LOCAL_PATH)/Substrate/*.c*)
     LOCAL_SRC_FILES += $(HOOK_SRC:$(LOCAL_PATH)/%=%)
 endif
 

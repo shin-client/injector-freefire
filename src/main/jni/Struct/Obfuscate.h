@@ -121,11 +121,17 @@ class obfuscator {
     cipher(m_data, N, KEY);
   }
 
-  constexpr const CHAR_TYPE *data() const { return &m_data[0]; }
+  constexpr const CHAR_TYPE *data() const {
+    return &m_data[0];
+  }
 
-  AY_CONSTEVAL size_type size() const { return N; }
+  AY_CONSTEVAL size_type size() const {
+    return N;
+  }
 
-  AY_CONSTEVAL key_type key() const { return KEY; }
+  AY_CONSTEVAL key_type key() const {
+    return KEY;
+  }
 
  private:
   CHAR_TYPE m_data[N]{};
@@ -173,7 +179,9 @@ class obfuscated_data {
   }
 
   // Returns true if this string is currently encrypted, false otherwise.
-  bool is_encrypted() const { return m_encrypted; }
+  bool is_encrypted() const {
+    return m_encrypted;
+  }
 
  private:
   // Local storage for the string. Call is_encrypted() to check whether or

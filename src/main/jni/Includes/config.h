@@ -9,4 +9,4 @@
 // It is to load our fake libmain.so or libunity.so and load game's real librealmain.so or librealunity.so
 #define UseFakeLib
 
-#endif //AUTO_IL2CPPDUMPER_CONFIG_H
+#endif  // AUTO_IL2CPPDUMPER_CONFIG_H

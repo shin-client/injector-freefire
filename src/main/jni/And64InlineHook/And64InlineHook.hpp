@@ -27,6 +27,7 @@
  SOFTWARE.
  */
 #pragma once
+#include <cstdint>
 #define A64_MAX_BACKUPS 256
 
 #ifdef __cplusplus
