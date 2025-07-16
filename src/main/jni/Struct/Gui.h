@@ -11,15 +11,10 @@
 
 #include <vector>
 
-#include "../imgui/fonts/Roboto-Regular.h"
-#include "Icon/Font.h"
-#include "Icon/Icon.h"
-#include "Icon/Iconcpp.h"
-#include "Icon/OPPOSans-H.h"
-#include "Struct/tools.hpp"
+#include "ImGui/fonts/Roboto-Regular.h"
 #include "imgui.h"
-#include "imgui_impl_android.h"
-#include "imgui_impl_opengl3.h"
+#include "ImGui/backends/imgui_impl_android.h"
+#include "ImGui/backends/imgui_impl_opengl3.h"
 #include "main.h"
 
 // Global variables
@@ -43,9 +38,7 @@ inline void myInput(void *thiz, void *ex_ab, void *ex_ac) {
   return;
 }
 
-// Initialize ImGui with proper styling for Android
 void SetupImgui() {
-  // Setup Dear ImGui context
   IMGUI_CHECKVERSION();
 
   ImGui::CreateContext();
@@ -68,15 +61,13 @@ void SetupImgui() {
   ImFontConfig font_cfg;
   font_cfg.SizePixels = 22.0f;
 
-  // Try to load Roboto font
-  ImFont *oppo_font = io.Fonts->AddFontFromMemoryTTF((void *)Roboto_Regular, sizeof(Roboto_Regular), 22.0f, &font_cfg,
+  ImFont *roboto_font = io.Fonts->AddFontFromMemoryTTF((void *)Roboto_Regular, sizeof(Roboto_Regular), 22.0f, &font_cfg,
                                                      io.Fonts->GetGlyphRangesDefault());
 
-  if (!oppo_font) {
+  if (!roboto_font) {
     io.Fonts->AddFontDefault(&font_cfg);
   }
 
-  // Arbitrary scale-up
   ImGui::GetStyle().ScaleAllSizes(3.0f);
 }
 

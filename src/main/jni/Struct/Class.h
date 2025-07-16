@@ -1,11 +1,12 @@
 #pragma once
 
-#include "../KittyMemory/KittyInclude.h"
+#include "KittyMemory/KittyInclude.h"
 #include "Bools.h"
 #include "Dobby/dobby.h"
 #include "Logger.h"
 #include "Unity/MonoString.h"
 #include "Unity/Quaternion.h"
+#include "Unity/Il2Cpp.h"
 #include "obfuscate.h"
 
 extern ElfScanner g_il2cppELF;

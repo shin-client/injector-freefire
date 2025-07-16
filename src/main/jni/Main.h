@@ -1,3 +1,5 @@
+#pragma once
+
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
 #include <dlfcn.h>
@@ -16,7 +18,7 @@
 
 #define libTarget "libil2cpp.so"
 
-uintptr_t G_IL2CPP;
+void hack();
 
 void DoHOOK(void *offseet, void *ptr, void **orig) { DobbyHook(offseet, ptr, orig); }
 
