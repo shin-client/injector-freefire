@@ -57,7 +57,7 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
     ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
 
     static int   currentMenu = 0;
-    static float item_width = 100.0f, item_height = 60.0f;
+    static float item_width = 0.0f, item_height = 60.0f;
 
     // Sidebar
     ImGui::BeginChild(OBFUSCATE("Sidebar"), ImVec2(150, 0), true);
@@ -226,7 +226,6 @@ void hack_thread(pid_t pid) {
   Il2CppAttach();
   LOGI("IL2CPP attached successfully");
 
-  LOGI("ResetGuest_OffsetVar: %d", ResetGuest_Offset);
   StartGUI();
 }
 

@@ -61,7 +61,13 @@ std::string GetCachedPlayerName(void *player) {
       int nick_Len = Nick->getLength();
       if (nick_Len <= 0 || nick_Len >= 1000) return "";
 
-      playerName = get_UTF8_String_Safe(Nick);
+      for (int i = 0; i < nick_Len; i++) {
+        char data = get_Chars(Nick, i);
+        // support UTF-8
+        playerName += data;
+      }
+
+      // playerName = get_UTF8_String_Safe(Nick);
 
       // Cache the result
       nameCache[player] = {playerName, static_cast<uint64_t>(now), nick_Len};
@@ -272,7 +278,7 @@ void *GetClosestEnemy() {
 }
 
 // Main ESP and Aimbot function
-inline void DrawESP(float screenWidth, float screenHeight) {
+void DrawESP(float screenWidth, float screenHeight) {
   ImDrawList *draw = ImGui::GetBackgroundDrawList();
   if (!draw) return;
 
@@ -290,11 +296,14 @@ inline void DrawESP(float screenWidth, float screenHeight) {
     frameCount = 0;
   }
 
-  void *CurrentMatch = Curent_Match();
+  void *CurrentMatch = nullptr;
   void *LocalPlayer  = nullptr;
 
-  if (CurrentMatch != nullptr) {
-    LocalPlayer = GetLocalPlayer(CurrentMatch);
+  if (g_AimbotConfig->Aimbot || g_ESPConfig->ESP_Enable) {
+    void *CurrentMatch = Curent_Match();
+    if (CurrentMatch != nullptr) {
+      LocalPlayer = GetLocalPlayer(CurrentMatch);
+    }
   }
 
   // Aimbot logic
@@ -397,6 +406,17 @@ inline void DrawESP(float screenWidth, float screenHeight) {
 
         // Name and Distance ESP
         if (g_ESPConfig->ESP_Name || g_ESPConfig->ESP_Distance) {
+          MonoString *Nick = get_NickName(enemy);
+          std::string names;
+          if (Nick != NULL) {
+            int nick_Len = Nick->getLength();
+            for (int i = 0; i < nick_Len; i++) {
+              char data = get_Chars(Nick, i);
+              // support UTF-8
+              names += data;
+            }
+          }
+
           std::string displayText;
           if (g_ESPConfig->ESP_Distance) displayText = "[" + int_to_string((int)distance) + "] ";
           if (g_ESPConfig->ESP_Name) {

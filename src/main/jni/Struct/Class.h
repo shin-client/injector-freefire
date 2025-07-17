@@ -438,13 +438,8 @@ static MonoString *get_NickName(void *player) {
 // STRING PROCESSING FUNCTIONS
 // ============================================================================
 
-char get_Chars(MonoString *str, int index) {
-  char (*_get_Chars)(MonoString *str, int index) = (char (*)(MonoString *, int))(CharGet);
-  return _get_Chars(str, index);
-}
-
 // Better UTF-8 support function
-wchar_t get_Chars_Wide(MonoString *str, int index) {
+wchar_t get_Chars(MonoString *str, int index) {
   wchar_t (*_get_Chars)(MonoString *str, int index) = (wchar_t (*)(MonoString *, int))(CharGet);
   return _get_Chars(str, index);
 }
@@ -461,7 +456,7 @@ std::string get_UTF8_String_Safe(MonoString *str) {
     utf8_str.reserve(len * 3);  // Reserve space for efficiency
 
     for (int i = 0; i < len; i++) {
-      wchar_t wch = get_Chars_Wide(str, i);
+      wchar_t wch = get_Chars(str, i);
 
       // Skip null characters
       if (wch == 0) continue;
@@ -478,7 +473,7 @@ std::string get_UTF8_String_Safe(MonoString *str) {
         utf8_str += (char)(0x80 | (wch & 0x3F));
       } else if (wch >= 0xD800 && wch <= 0xDBFF && i + 1 < len) {
         // Handle surrogate pairs for 4-byte UTF-8 (emojis, rare characters)
-        wchar_t low = get_Chars_Wide(str, i + 1);
+        wchar_t low = get_Chars(str, i + 1);
         if (low >= 0xDC00 && low <= 0xDFFF)  // Valid low surrogate
         {
           // Calculate the full Unicode codepoint
