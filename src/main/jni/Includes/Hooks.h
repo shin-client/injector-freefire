@@ -20,26 +20,10 @@ bool _ResetGuest(void *instance) {
   return old_ResetGuest(instance);
 }
 
-/*=================[ Fov ]====================*/
-bool fovFeature = false;
-int  fovValue   = 55;
-
-float (*Org_FovHack2)(void *instance);
-
-float FovHack2(void *instance) {
-  if (instance != NULL) {
-    if (fovFeature) {
-      return fovValue;
-    }
-  }
-  return Org_FovHack2(instance);
-}
-
 /*=================[ Csr ]====================*/
 static bool  svaston;
 static float cs1             = 6.8f;
 static float svastonColor[4] = {1.0f, 1.0f, 1.0f, 1.0f};
-static bool  isFov2;
 static float aimRadius = 55.0f, aimThickness = 1.0f;
 static float aimColor[4] = {1.0f, 1.0f, 1.0f, 1.0f};
 

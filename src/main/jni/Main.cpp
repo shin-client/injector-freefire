@@ -73,12 +73,8 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
   if (svaston) {
     SwastonCrosshairv1();
   }
-  if (isFov2) {
-    auto background = ImGui::GetBackgroundDrawList();
-    background->AddCircle({g_GlWidth / 2, g_GlHeight / 2}, aimRadius,
-                          ImGui::ColorConvertFloat4ToU32(*(ImVec4 *)aimColor), 0, aimThickness / 20);
-  }
 
+  DrawESP(g_GlWidth, g_GlHeight);
   ImGui::SetNextWindowSize(ImVec2((float)g_GlWidth * 0.35f, (float)g_GlHeight * 0.50f), ImGuiCond_Once);
   if (ImGui::Begin(OBFUSCATE("NgocDev FF Việt Nam"), 0, ImGuiWindowFlags_NoBringToFrontOnFocus)) {
     SetShadowSettings();
@@ -127,19 +123,6 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
       }
 
       if (tab == 3) {
-        ImGui::Checkbox("Camera Fov", &fovFeature);
-        if (fovFeature) {
-          ImGui::SliderInt("Fov value", &fovValue, 360, 0);
-        }
-        ImGui::Checkbox("Draw fov", &isFov2);
-        if (isFov2) {
-          ImGui::SameLine();
-          ImGui::PushItemWidth(300);
-          ImGui::ColorEdit3("Color##Aim", (float *)&aimColor, ImGuiColorEditFlags_NoInputs);
-          ImGui::SliderFloat("Fov##Aim", &aimRadius, 0, 360, "%f°");
-          ImGui::SliderFloat("Thickness##Aim", &aimThickness, 20, 100, "%f", 0);
-          ImGui::PopItemWidth();
-        }
         ImGui::Checkbox(OBFUSCATE("Draw Crosshair"), &svaston);
         if (svaston) {
           ImGui::SameLine();
