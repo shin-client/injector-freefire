@@ -135,7 +135,7 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
           }
 
           if (ImGui::Checkbox(OBFUSCATE("Reset Guest"), &g_OtherConfig->ResetGuest)) {
-            Patch_ResetGuest(g_OtherConfig->ResetGuest);
+            Patch_ResetGuest_Hook();
           }
 
           ImGui::Spacing();
@@ -265,5 +265,8 @@ JNIEXPORT void JNICALL JNI_OnUnload(JavaVM *vm, void *reserved) {
 }
 
 #else
-__attribute__((constructor)) void lib_main() { std::thread(hack_thread, getpid()).detach(); }
+__attribute__((constructor)) void lib_main() {
+  std::thread(hack_thread, getpid()).detach();
+  LOGI("lib_main success");
+}
 #endif

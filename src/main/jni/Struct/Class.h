@@ -1,15 +1,15 @@
 #pragma once
 
-#include "KittyMemory/KittyInclude.h"
 #include "Bools.h"
 #include "Dobby/dobby.h"
+#include "KittyMemory/KittyInclude.h"
 #include "Logger.h"
+#include "Unity/Il2Cpp.h"
 #include "Unity/MonoString.h"
 #include "Unity/Quaternion.h"
-#include "Unity/Il2Cpp.h"
 #include "obfuscate.h"
 
-extern ElfScanner g_il2cppELF;
+extern uintptr_t g_Il2cppBase;
 
 // ============================================================================
 // UTILITY CLASSES
@@ -335,23 +335,14 @@ static void *GetLocalPlayer(void *Game) {
   return _GetLocalPlayer(Game);
 }
 
-static void Patch_ResetGuest(bool enable) {
-  uintptr_t il2cppBase = g_il2cppELF.base();
+static bool (*orig_ResetGuest)();
 
-  LOGD("ResetGuest_Offset: %d", ResetGuest_Offset);
+static bool fake_ResetGuest() { return true; }
 
-  MemoryPatch patch =
-      MemoryPatch::createWithBytes(il2cppBase + ResetGuest_Offset, "\x01\x00\xA0\xE3\x1E\xFF\x2F\xE1", 8);
-
-  if (enable) {
-    if (!patch.Modify()) {
-      LOGE("Patch ResetGuest failed!");
-    }
-  } else {
-    if (!patch.Restore()) {
-      LOGE("Restore ResetGuest failed!");
-    }
-  }
+void Patch_ResetGuest_Hook() {
+  void *resetGuestAddr = (void *)(g_Il2cppBase + 0x5ed140c);
+  LOGD("resetGuestAddr: %p", resetGuestAddr);
+  DobbyHook(resetGuestAddr, (dobby_dummy_func_t)fake_ResetGuest, (dobby_dummy_func_t *)&orig_ResetGuest);
 }
 
 // Player Status Functions
