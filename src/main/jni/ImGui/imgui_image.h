@@ -11,7 +11,7 @@ struct TextureInfo {
 
 TextureInfo CreateTexture(const unsigned char *buf, int len) {
   TextureInfo    image;
-  unsigned char *image_data = stbi_load_from_memory(buf, len, &image.w, &image.h, NULL, 0);
+  unsigned char *image_data = stbi_load_from_memory(buf, len, &image.w, &image.h, NULL, 4);
   if (image_data == NULL) perror("File not found!");
   GLuint image_texture;
   glGenTextures(1, &image_texture);

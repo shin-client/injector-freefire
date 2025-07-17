@@ -18,7 +18,6 @@
 #include "Includes/Hooks.h"
 #include "Includes/Macros.h"
 #include "Includes/Utils.h"
-// #include "Includes/android_native_app_glue.h"
 #include "Includes/config.h"
 #include "KittyMemory/KittyInclude.h"
 #include "Struct/Class.h"
@@ -27,21 +26,20 @@
 #include "Struct/obfuscate.h"
 #include "Unity/Il2Cpp.h"
 
-extern int   g_GlWidth, g_GlHeight;
-ElfScanner   g_il2cppELF;
-uintptr_t    g_Il2cppBase;
-std::string  processName;
-// android_app *g_App = nullptr;
+extern int  g_GlWidth, g_GlHeight;
+ElfScanner  g_il2cppELF;
+uintptr_t   g_Il2cppBase;
+std::string processName;
 
 EGLBoolean (*old_eglSwapBuffers)(EGLDisplay dpy, EGLSurface surface);
+
+inline static ImVec2 SetCenterMenuPos(float width, float height) {
+  return ImVec2(g_GlWidth / 2 - (g_GlWidth * width) / 2, g_GlHeight / 2 - (g_GlHeight * height) / 2);
+}
 
 EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
   eglQuerySurface(dpy, surface, EGL_WIDTH, &g_GlWidth);
   eglQuerySurface(dpy, surface, EGL_HEIGHT, &g_GlHeight);
-
-  // if (!g_App || !g_App->config) return old_eglSwapBuffers(dpy, surface);
-  // egl.screenWidth  = ANativeWindow_getWidth(g_App->window);
-  // egl.screenHeight = ANativeWindow_getHeight(g_App->window);
 
   if (!g_IsSetup) {
     prevWidth  = g_GlWidth;
@@ -58,27 +56,28 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
 
   DrawESP(g_GlWidth, g_GlHeight);
   RenderLogsWindow();
-  ImGui::SetNextWindowSize(ImVec2((float)g_GlWidth * 0.1f, (float)g_GlHeight * 0.2f), ImGuiCond_Once);
-  if (ImGui::Begin("**CROZN", 0,
+  ImGui::SetNextWindowPos(ImVec2(50, 50), ImGuiCond_Once);
+  // ImGui::SetNextWindowSize(ImVec2((float)g_GlWidth * 0.1f, (float)g_GlHeight * 0.1f), ImGuiCond_Once);
+  if (ImGui::Begin(OBFUSCATE("NgocDev"), 0,
                    ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoSavedSettings)) {
-    ImGui::PushStyleColor(ImGuiCol_Button, {0, 0, 0, 0});
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, {0, 0, 0, 0});
-    ImGui::PushStyleColor(ImGuiCol_ButtonActive, {0, 0, 0, 0});
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 100.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
-    if (ImGui::ImageButton((ImTextureID)LogoPIC.textureId, ImVec2(75, 75))) {
-      IsMenuOpen = true;
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
+
+    if (ImGui::ImageButton((ImTextureID)LogoPIC.textureId, ImVec2(80, 80))) {
+      IsMenuOpen = !IsMenuOpen;
     }
-    ImGui::PopStyleColor(3);
-    ImGui::PopStyleVar(1);
+
+    ImGui::PopStyleVar(3);
+    ImGui::End();
   }
 
-  // ImGui::SetNextWindowSize(ImVec2((float)g_GlWidth * 0.35f, (float)g_GlHeight * 0.50f), ImGuiCond_Once);
-  if (IsMenuOpen) {
-    ImGui::Begin(
-        OBFUSCATE("NgocDev FF Việt Nam"), &IsMenuOpen,
-        ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBringToFrontOnFocus);
-    SetShadowSettings();
-    ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
+  ImGui::SetNextWindowPos(SetCenterMenuPos(0.35f, 0.50f), ImGuiCond_Once);
+  ImGui::SetNextWindowSize(ImVec2((float)g_GlWidth * 0.35f, (float)g_GlHeight * 0.50f), ImGuiCond_Once);
+  if (IsMenuOpen && ImGui::Begin(OBFUSCATE("NgocDev FF Việt Nam"), &IsMenuOpen,
+                                 ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoCollapse |
+                                     ImGuiWindowFlags_NoBringToFrontOnFocus)) {
+    ImGui::Text(OBFUSCATE("FPS: %.1f"), ImGui::GetIO().Framerate);
 
     static int   currentMenu = 0;
     static float item_width = 0.0f, item_height = 60.0f;
@@ -207,7 +206,6 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
 
   ImGui::End();
   ImGui::Render();
-
   glViewport(0, 0, io.DisplaySize.x, io.DisplaySize.y);
   ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
   return old_eglSwapBuffers(dpy, surface);

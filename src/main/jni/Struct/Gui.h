@@ -15,6 +15,7 @@
 #include "ImGui/backends/imgui_impl_opengl3.h"
 #include "ImGui/box_shadow.h"
 #include "ImGui/fonts/Roboto-Regular.h"
+#include "ImGui/images/picsart.h"
 #include "ImGui/imgui_image.h"
 #include "imgui.h"
 #include "main.h"
@@ -147,12 +148,13 @@ void SetupImgui() {
 
   ImGui_ImplOpenGL3_Init("#version 300 es");
 
+  LogoPIC = CreateTexture(picsart_data, sizeof(picsart_data));
+
   ImFontConfig font_cfg;
   font_cfg.SizePixels = 22.0f;
 
   ImFont *roboto_font = io.Fonts->AddFontFromMemoryTTF((void *)Roboto_Regular, sizeof(Roboto_Regular), 22.0f, &font_cfg,
                                                        io.Fonts->GetGlyphRangesVietnamese());
-  io.Fonts->GetGlyphRangesVietnamese();
 
   if (!roboto_font) {
     io.Fonts->AddFontDefault(&font_cfg);
