@@ -105,6 +105,7 @@ void SetDarkGrayTheme() {
   style->WindowTitleAlign  = ImVec2(0.5, 0.5);
   style->FramePadding      = ImVec2(8, 6);
   style->ScaleAllSizes(1.5f);
+  style->SelectableTextAlign = ImVec2(0.5, 0.5);
 
   // Enhanced tab styling for fixed appearance
   style->TabMinWidthForCloseButton = 0.0f;

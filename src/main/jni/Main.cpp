@@ -9,6 +9,7 @@
 #include "And64InlineHook/And64InlineHook.hpp"
 #include "Chams.h"
 #include "ImGui/Fonts/Roboto-Regular.h"
+#include "ImGui/Toggle.h"
 #include "ImGui/backends/imgui_impl_android.h"
 #include "ImGui/backends/imgui_impl_opengl3.h"
 #include "ImGui/imgui.h"
@@ -48,91 +49,136 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
   ImGui_ImplAndroid_NewFrame(g_GlWidth, g_GlHeight);
   ImGui::NewFrame();
 
-  int touchCount = (((int (*)())(Class_Input__get_touchCount))());
-  if (touchCount > 0) {
-    UnityEngine_Touch_Fields touch    = ((UnityEngine_Touch_Fields (*)(int))(Class_Input__GetTouch))(0);
-    float                    reverseY = io.DisplaySize.y - touch.m_Position.fields.y;
-    switch (touch.m_Phase) {
-      case TouchPhase::Began:
-      case TouchPhase::Stationary:
-        io.MousePos     = ImVec2(touch.m_Position.fields.x, reverseY);
-        io.MouseDown[0] = true;
-        break;
-      case TouchPhase::Ended:
-      case TouchPhase::Canceled:
-        io.MouseDown[0] = false;
-        break;
-      case TouchPhase::Moved:
-        io.MousePos = ImVec2(touch.m_Position.fields.x, reverseY);
-        break;
-      default:
-        break;
-    }
-  }
-
-  if (svaston) {
-    SwastonCrosshairv1();
-  }
-
   DrawESP(g_GlWidth, g_GlHeight);
+  RenderLogsWindow();
   ImGui::SetNextWindowSize(ImVec2((float)g_GlWidth * 0.35f, (float)g_GlHeight * 0.50f), ImGuiCond_Once);
   if (ImGui::Begin(OBFUSCATE("NgocDev FF Việt Nam"), 0, ImGuiWindowFlags_NoBringToFrontOnFocus)) {
     SetShadowSettings();
     ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
-    ImGui::Text("%s", processName.c_str());
 
-    ImGui::Columns(2);
-    ImGui::SetColumnOffset(1, 145);
-    static int tab = 1;
+    static int   currentMenu = 0;
+    static float item_width = 100.0f, item_height = 60.0f;
+
+    // Sidebar
+    ImGui::BeginChild(OBFUSCATE("Sidebar"), ImVec2(150, 0), true);
     {
-      if (ImGui::Button("PLAYER", ImVec2(100, 80))) {
-        tab = 1;
-      }
-      if (ImGui::Button("CHAMS", ImVec2(100, 80))) {
-        tab = 2;
-      }
-      if (ImGui::Button("VISUAL", ImVec2(100, 80))) {
-        tab = 3;
-      }
-      ImGui::NextColumn();
+      if (ImGui::Selectable(OBFUSCATE("ESP"), currentMenu == 0, 0, ImVec2(item_width, item_height))) currentMenu = 0;
+      if (ImGui::Selectable(OBFUSCATE("Aimbot"), currentMenu == 1, 0, ImVec2(item_width, item_height))) currentMenu = 1;
+      if (ImGui::Selectable(OBFUSCATE("Settings"), currentMenu == 2, 0, ImVec2(item_width, item_height)))
+        currentMenu = 2;
+      if (ImGui::Selectable(OBFUSCATE("Info"), currentMenu == 3, 0, ImVec2(item_width, item_height))) currentMenu = 3;
+    }
+    ImGui::EndChild();
 
-      if (tab == 1) {
-        static bool prev_ResetGuest = false;
-        ImGui::Checkbox(OBFUSCATE("Reset Guest"), &ResetGuest);
-        if (ResetGuest != prev_ResetGuest) {
-          if (ResetGuest && ResetGuest_Offset != 0) {
-            // Patch_ResetGuest(ResetGuest);
-            // LOGD("Patch_ResetGuest [ON]");
-            LOGD("ResetGuest_OffsetVar: %d", ResetGuest_Offset);
-            DWORD absAddr = getAbsoluteAddress("libil2cpp.so", (DWORD)ResetGuest_Offset);
-            LOGD("absAddr: %d", absAddr);
-            DobbyHook((void *)absAddr, (void *)_ResetGuest, (void **)&old_ResetGuest);
-            LOGD("DobbyHook [ON]");
-            // A64HookFunction((void *)absAddr, (void *)_ResetGuest, (void **)&old_ResetGuest);
-            // LOGD("A64HookFunction [ON]");
-          } else {
-            LOGD("Reset Guest [OFF]");
-            DobbyDestroy((void *)ResetGuest_Offset);
+    ImGui::SameLine();
+
+    // Content
+    ImGui::BeginChild(OBFUSCATE("Content"), ImVec2(0, 0), true);
+    {
+      switch (currentMenu) {
+        case 0: {
+          ImGui::Spacing();
+          ImGui::Text(OBFUSCATE("ESP Features"));
+          ImGui::Separator();
+
+          Toggle(OBFUSCATE("Enable ESP"), &g_ESPConfig->ESP_Enable);
+          Toggle(OBFUSCATE("Box ESP"), &g_ESPConfig->ESP_Box);
+          Toggle(OBFUSCATE("Line ESP"), &g_ESPConfig->ESP_Line);
+          Toggle(OBFUSCATE("Health ESP"), &g_ESPConfig->ESP_Health);
+          Toggle(OBFUSCATE("Name ESP"), &g_ESPConfig->ESP_Name);
+          Toggle(OBFUSCATE("Distance ESP"), &g_ESPConfig->ESP_Distance);
+
+          ImGui::Spacing();
+          ImGui::Separator();
+
+          ImGui::Spacing();
+          if (ImGui::Button(OBFUSCATE("Enable All ESP"), ImVec2(-1, 0))) {
+            g_ESPConfig->enableAll();
           }
-          prev_ResetGuest = ResetGuest;
+          if (ImGui::Button(OBFUSCATE("Disable All ESP"), ImVec2(-1, 0))) {
+            g_ESPConfig->disableAll();
+          }
+          break;
         }
-      }
+        case 1: {
+          ImGui::Spacing();
+          Toggle(OBFUSCATE("Enable AimBot Head"), &g_AimbotConfig->Aimbot);
+          ImGui::Separator();
 
-      if (tab == 2) {
-        ImGui::Text("%s", processName.c_str());
-      }
+          if (g_AimbotConfig->Aimbot) {
+            ImGui::Text(OBFUSCATE("Aim Settings:"));
+            ImGui::Combo(OBFUSCATE("##AimDir"), &g_AimbotConfig->AimWhen, dir, DIR_COUNT);
 
-      if (tab == 3) {
-        ImGui::Checkbox(OBFUSCATE("Draw Crosshair"), &svaston);
-        if (svaston) {
-          ImGui::SameLine();
-          ImGui::PushItemWidth(300);
-          ImGui::ColorEdit3("Color##Svaston", (float *)&svastonColor, ImGuiColorEditFlags_NoInputs);
-          ImGui::SliderFloat("Crosshair Size##Aim", &cs1, 0, 100);
-          ImGui::PopItemWidth();
+            if (g_AimbotConfig->AimWhen == 0) {
+              ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), OBFUSCATE("Mode: Auto Aim"));
+            } else if (g_AimbotConfig->AimWhen == 1) {
+              ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), OBFUSCATE("Mode: Hold to Fire"));
+            } else if (g_AimbotConfig->AimWhen == 2) {
+              ImGui::TextColored(ImVec4(1.0f, 0.0f, 1.0f, 1.0f), OBFUSCATE("Mode: Hold to Scope"));
+            }
+
+            ImGui::SliderFloat(OBFUSCATE("FOV Range"), &g_AimbotConfig->Fov_Aim, 0.0f, 500.0f, "%.0f");
+            ImGui::SliderFloat(OBFUSCATE("Max Distance"), &g_AimbotConfig->Aimdis, 0.0f, 1000.0f, "%.0f");
+          } else {
+            ImGui::TextColored(ImVec4(0.7f, 0.7f, 0.7f, 1.0f), OBFUSCATE("Enable Aimbot to configure settings"));
+          }
+          break;
+        }
+        case 2: {
+          ImGui::Text(OBFUSCATE("General Settings"));
+          ImGui::Separator();
+
+          if (ImGui::Checkbox(OBFUSCATE("Anti-Report"), &g_OtherConfig->AntiReport)) {
+            if (g_OtherConfig->AntiReport) {
+              SetupAntiReport();
+            }
+          }
+
+          if (ImGui::Checkbox(OBFUSCATE("Reset Guest"), &g_OtherConfig->ResetGuest)) {
+            Patch_ResetGuest(g_OtherConfig->ResetGuest);
+          }
+
+          ImGui::Spacing();
+          if (ImGui::Button(OBFUSCATE("Reset All Settings"), ImVec2(-1, 0))) {
+            g_OtherConfig->resetAll();
+          }
+          break;
+        }
+        case 3: {
+          ImGui::Spacing();
+          ImGui::Text(OBFUSCATE("About"));
+          ImGui::Separator();
+
+          ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), OBFUSCATE("Injector by Ngoc"));
+          ImGui::Text(OBFUSCATE("ESP & Aimbot for Free Fire"));
+          ImGui::Spacing();
+          ImGui::Separator();
+          ImGui::Text(OBFUSCATE("Version: 1.0.0 | Build: x32/x64"));
+          ImGui::TextColored(ImVec4(0.0f, 1.0f, 0.0f, 1.0f), OBFUSCATE("Status: Injected"));
+          ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), OBFUSCATE("Game: %s"), processName.c_str());
+
+          ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), OBFUSCATE("Use responsibly!"));
+
+          ImGui::Spacing();
+          ImGui::Separator();
+
+          ImGui::Text(OBFUSCATE("Debug Options"));
+          ImGui::Separator();
+
+          if (ImGui::Button(OBFUSCATE("Show Debug Logs"), ImVec2(-1, 0))) {
+            g_LogsVisible = true;
+          }
+
+          ImGui::Spacing();
+          if (ImGui::Button(OBFUSCATE("Export All Logs"), ImVec2(-1, 0))) {
+            SaveLogsToFile();
+            LOGI("Log export completed. Check file: %s", g_LogFilePath.c_str());
+          }
+          break;
         }
       }
     }
+    ImGui::EndChild();
   }
 
   ImGui::End();
@@ -156,6 +202,7 @@ void StartGUI() {
 
 void hack_thread(pid_t pid) {
   LOGD("Thread PID: %i", pid);
+  InitHooks();
 
   processName = KittyMemory::getProcessName();
 
@@ -173,7 +220,7 @@ void hack_thread(pid_t pid) {
   }
 
   LOGI("il2cppBase: 0x%" PRIxPTR, g_Il2cppBase);
-  LOGD("Waiting 10 seconds before attachment...");
+  LOGD("Waiting 5 seconds before attachment...");
   sleep(5);
 
   Il2CppAttach();

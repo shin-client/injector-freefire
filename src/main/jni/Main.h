@@ -23,3 +23,8 @@ void hack();
 void DoHOOK(void *offseet, void *ptr, void **orig) { DobbyHook(offseet, ptr, orig); }
 
 #define DHOOK(offseet, ptr, orig) DoHOOK((void *)getAbsoluteAddress(libTarget, offseet), (void *)ptr, (void **)&orig)
+
+struct {
+  int screenWidth;
+  int screenHeight;
+} egl;

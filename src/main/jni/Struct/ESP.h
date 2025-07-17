@@ -317,6 +317,17 @@ inline void DrawESP(float screenWidth, float screenHeight) {
         }
       } catch (...) {
       }
+
+      // Crosshair
+      if (svaston) {
+        SwastonCrosshairv1();
+      }
+
+      // ESP_FOVCircle
+      if (g_AimbotConfig->Aimbot) {
+        draw->AddCircle(ImVec2(screenWidth / 2, screenHeight / 2), g_AimbotConfig->Fov_Aim, ImColor(255, 255, 255), 0,
+                        1.5f);
+      }
     }
   }
 
@@ -324,19 +335,12 @@ inline void DrawESP(float screenWidth, float screenHeight) {
   if (g_ESPConfig->ESP_Enable && CurrentMatch != nullptr && LocalPlayer != nullptr) {
     void *camera = Camera_main();
     if (camera != nullptr) {
-      // Get all enemies for ESP (no FOV restriction)
       std::vector<void *> enemies = GetAllEnemies();
 
       int enemiesQuantity = enemies.size();
 
       ImGui::GetBackgroundDrawList()->AddText(ImVec2(20, 20), ImColor(255, 0, 0),
                                               (std::to_string(enemiesQuantity)).c_str());
-
-      // ESP_FOVCircle
-      if (g_AimbotConfig->Aimbot) {
-        draw->AddCircle(ImVec2(screenWidth / 2, screenHeight / 2), g_AimbotConfig->Fov_Aim, ImColor(255, 255, 255), 0,
-                        1.5f);
-      }
 
       for (void *enemy : enemies) {
         // Get positions once and reuse

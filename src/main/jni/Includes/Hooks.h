@@ -37,45 +37,44 @@ void SwastonCrosshairv1() {
 }
 
 /*=================[ System ]====================*/
-/*
+
 void (*old_input)(void *event, void *exAb, void *exAc);
 
 void hook_input(void *event, void *exAb, void *exAc) {
   old_input(event, exAb, exAc);
   ImGui_ImplAndroid_HandleTouchEvent(
-      (AInputEvent *)event, {(float)g_GlWidth / (float)g_GlWidth, (float)g_GlHeight / (float)g_GlHeight});
+      (AInputEvent *)event, {(float)egl.screenWidth / (float)g_GlWidth, (float)egl.screenHeight / (float)g_GlHeight});
   return;
 }
 
 int (*old_getWidth)(ANativeWindow *window);
 
 int hook_getWidth(ANativeWindow *window) {
-  g_GlWidth = old_getWidth(window);
+  egl.screenWidth = old_getWidth(window);
   return old_getWidth(window);
 }
 
 int (*old_getHeight)(ANativeWindow *window);
 
 int hook_getHeight(ANativeWindow *window) {
-  g_GlHeight = old_getHeight(window);
+  egl.screenHeight = old_getHeight(window);
   return old_getHeight(window);
 }
 
-// Use in hack_thread()
-void *sym_input =
-    DobbySymbolResolver(("/system/lib/libinput.so"),
-                        ("_ZN7android13InputConsumer21initializeMotionEventEPNS_11MotionEventEPKNS_12InputMessageE"));
-if (NULL != sym_input) {
-  DobbyHook((void *)sym_input, (void *)hook_input, (void **)&old_input);
-}
+void InitHooks() {
+  void *libAndroid = dlopen(OBFUSCATE("libandroid.so"), RTLD_NOW | RTLD_GLOBAL);
+  if (!libAndroid) {
+    LOGE(OBFUSCATE("Failed to load libandroid.so: %s"), dlerror());
+  }
 
-void *libEGL = dlopen(OBFUSCATE("libEGL.so"), RTLD_NOW | RTLD_GLOBAL);
-if (!libEGL) {
-  LOGE(OBFUSCATE("Failed to load libEGL.so: %s"), dlerror());
-}
+  void *sym_input = DobbySymbolResolver("/system/lib/libinput.so",
+                                        "_ZN7android13InputConsumer21initializeMotionEventEPNS_11MotionEventEPKNS_12InputMessageE");
+  if (sym_input != NULL) {
+    DobbyHook((void *)sym_input, (void *)hook_input, (void **)&old_input);
+  }
 
-DobbyHook((void *)dlsym(dlopen(OBFUSCATE("libandroid.so"), 4), OBFUSCATE("ANativeWindow_getWidth")),
-          (void *)hook_getWidth, (void **)&old_getWidth);
-DobbyHook((void *)dlsym(dlopen(OBFUSCATE("libandroid.so"), 4), OBFUSCATE("ANativeWindow_getHeight")),
-          (void *)hook_getHeight, (void **)&old_getHeight);
-*/
+  DobbyHook((void *)dlsym(dlopen(OBFUSCATE("libandroid.so"), RTLD_NOW | RTLD_GLOBAL), OBFUSCATE("ANativeWindow_getWidth")),
+            (void *)hook_getWidth, (void **)&old_getWidth);
+  DobbyHook((void *)dlsym(dlopen(OBFUSCATE("libandroid.so"), RTLD_NOW | RTLD_GLOBAL), OBFUSCATE("ANativeWindow_getHeight")),
+            (void *)hook_getHeight, (void **)&old_getHeight);
+}
