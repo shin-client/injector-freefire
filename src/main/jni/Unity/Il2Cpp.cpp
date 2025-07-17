@@ -7,6 +7,7 @@
 #include <cstring>
 #include <map>
 
+#include "Struct/Logger.h"
 #include "xdl/xdl.h"
 
 #define g_LogTag "NgocDev"
@@ -189,19 +190,23 @@ void *Il2CppGetMethodOffset(const char *image, const char *namespaze, const char
                             int argsCount) {
   void *img = Il2CppGetImageByName(image);
   if (!img) {
+    LOGD("Can't find image %s!", image);
     __android_log_print(ANDROID_LOG_ERROR, g_LogTag, "Can't find image %s!", image);
     return 0;
   }
   void *klass = Il2CppGetClassType(image, namespaze, clazz);
   if (!klass) {
+    LOGD("Can't find method %s!", name);
     __android_log_print(ANDROID_LOG_ERROR, g_LogTag, "Can't find method %s!", name);
     return 0;
   }
   void **method = (void **)il2cpp_class_get_method_from_name(klass, name, argsCount);
   if (!method) {
+    LOGD("Can't find method %s in class %s!", name, clazz);
     __android_log_print(ANDROID_LOG_ERROR, g_LogTag, "Can't find method %s in class %s!", name, clazz);
     return 0;
   }
+  LOGD("%s - [%s] %s::%s: %p", image, namespaze, clazz, name, *method);
   __android_log_print(ANDROID_LOG_DEBUG, g_LogTag, "%s - [%s] %s::%s: %p", image, namespaze, clazz, name, *method);
   return *method;
 }

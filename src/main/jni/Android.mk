@@ -1,5 +1,4 @@
 LOCAL_PATH := $(call my-dir)
-MAIN_LOCAL_PATH := $(call my-dir)
 
 # ============================================================================#
 include $(CLEAR_VARS)
@@ -9,13 +8,13 @@ include $(PREBUILT_STATIC_LIBRARY)
 # ============================================================================#
 
 include $(CLEAR_VARS)
-
 LOCAL_MODULE           := main
 
 LOCAL_CFLAGS           := -Wno-error=format-security -fvisibility=hidden -ffunction-sections -fdata-sections -w
 LOCAL_CFLAGS           += -fno-rtti -fno-exceptions -fpermissive
-LOCAL_CPPFLAGS         := -Wno-error=format-security -fvisibility=hidden -ffunction-sections -fdata-sections -w -Werror -s -std=c++17
-LOCAL_CPPFLAGS         += -Wno-error=c++11-narrowing -fms-extensions -fno-rtti -fno-exceptions -fpermissive
+LOCAL_CPPFLAGS         := -Wno-error=format-security -fvisibility=hidden -ffunction-sections -fdata-sections -w -Werror -s -std=c++23
+LOCAL_CPPFLAGS         += -finput-charset=UTF-8 -fexec-charset=UTF-8
+LOCAL_CPPFLAGS         += -Wno-error=c++11-narrowing -fms-extensions -fno-rtti -fno-exceptions -fpermissive -Os
 LOCAL_LDFLAGS          += -Wl,--gc-sections,--strip-all, -llog
 LOCAL_ARM_MODE         := arm
 LOCAL_LDLIBS           := -llog -landroid -lEGL -lGLESv3 -lGLESv2 -lGLESv1_CM -lz
@@ -36,6 +35,7 @@ FILE_LIST               += $(wildcard $(LOCAL_PATH)/xdl/*.c*)
 FILE_LIST               += $(wildcard $(LOCAL_PATH)/Struct/*.c*)
 FILE_LIST               += $(wildcard $(LOCAL_PATH)/KittyMemory/*.c*)
 FILE_LIST               += $(wildcard $(LOCAL_PATH)/Unity/*.c*)
+FILE_LIST               += $(wildcard $(BNM_PATH)/src/*.c*)
 FILE_LIST              += $(wildcard $(LOCAL_PATH)/*.c*)
 
 LOCAL_SRC_FILES        := $(FILE_LIST:$(LOCAL_PATH)/%=%)
@@ -51,12 +51,7 @@ else ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
     LOCAL_SRC_FILES += $(HOOK_SRC:$(LOCAL_PATH)/%=%)
 endif
 
-
-
-
 LOCAL_STATIC_LIBRARIES := libdobby
 LOCAL_CPP_FEATURES     := exceptions
 
 include $(BUILD_SHARED_LIBRARY)
-# ============================================================================
-

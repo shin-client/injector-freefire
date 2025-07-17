@@ -1,5 +1,8 @@
-#ifndef UTILS
-#define UTILS
+#pragma once
+
+#ifndef DWORD
+#define DWORD unsigned int
+#endif
 
 #include <jni.h>
 #include <unistd.h>
@@ -9,7 +12,8 @@
 #include <cstring>
 #include <string>
 
-#include "log.h"
+#include "Struct/Logger.h"
+#include "Struct/Obfuscate.h"
 
 static uintptr_t libBase;
 const char      *libName   = "libil2cpp.so";
@@ -66,4 +70,31 @@ bool isLibraryLoaded(const char *libraryName) {
   return false;
 }
 
-#endif
+// MakeToast(env, context, OBFUSCATE("Modded by LGL"), Toast::LENGTH_LONG);
+void MakeToast(JNIEnv *env, jobject thiz, const char *text, int length) {
+    //Add our toast in here so it wont be easy to change by simply editing the smali and cant
+    //be cut out because this method is needed to start the hack (Octowolve is smart)
+    jstring jstr = env->NewStringUTF(text); //Edit this text to your desired toast message!
+    jclass toast = env->FindClass(OBFUSCATE("android/widget/Toast"));
+    jmethodID methodMakeText =
+            env->GetStaticMethodID(
+                    toast,
+                    OBFUSCATE("makeText"),
+                    OBFUSCATE(
+                            "(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;"));
+    if (methodMakeText == NULL) {
+        LOGE(OBFUSCATE("toast.makeText not Found"));
+        return;
+    }
+    //The last int is the length on how long the toast should be displayed
+    //0 = Short, 1 = Long
+    jobject toastobj = env->CallStaticObjectMethod(toast, methodMakeText,
+                                                   thiz, jstr, length);
+
+    jmethodID methodShow = env->GetMethodID(toast, OBFUSCATE("show"), OBFUSCATE("()V"));
+    if (methodShow == NULL) {
+        LOGE(OBFUSCATE("toast.show not Found"));
+        return;
+    }
+    env->CallVoidMethod(toastobj, methodShow);
+}

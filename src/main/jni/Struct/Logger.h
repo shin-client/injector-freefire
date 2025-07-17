@@ -36,7 +36,7 @@ void        InitLogFile();
 void        WriteLogToFile(const std::string& timestamp, const std::string& level, const std::string& message);
 
 // Logging macros
-#define TAG "ZygiskFF"
+#define TAG "InjectorFF"
 #define LOGD(...)                                             \
   do {                                                        \
     __android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__); \

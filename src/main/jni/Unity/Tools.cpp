@@ -5,6 +5,7 @@
 #include <inttypes.h>
 #include <jni.h>
 #include <libgen.h>
+#include <stdlib.h>
 // #include <openssl/err.h>
 // #include <openssl/evp.h>
 // #include <openssl/md5.h>

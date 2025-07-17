@@ -16,11 +16,23 @@
 #ifndef IL2CPP_H
 #define IL2CPP_H
 
-// ================================================================================================================================
-// //
 typedef void (*Il2CppMethodPointer)();
+typedef int32_t AssemblyIndex;
+typedef int32_t TypeDefinitionIndex;
+typedef int32_t MethodIndex;
+typedef int32_t ImageIndex;
+typedef int32_t CustomAttributeIndex;
+typedef int32_t StringIndex;
 
+const TypeDefinitionIndex kTypeDefinitionIndexInvalid = -1;
+const int                 kPublicKeyByteLength        = 8;
+
+struct Il2CppNameToTypeDefinitionIndexHashTable;
 struct MethodInfo;
+struct Il2CppDomain;
+struct Il2CppAssembly;
+struct Il2CppImage;
+struct Il2CppAssemblyName;
 
 struct VirtualInvokeData {
   Il2CppMethodPointer methodPtr;
@@ -116,6 +128,29 @@ typedef int32_t il2cpp_array_lower_bound_t;
 struct Il2CppArrayBounds {
   il2cpp_array_size_t        length;
   il2cpp_array_lower_bound_t lower_bound;
+};
+
+struct Il2CppAssemblyName {
+  StringIndex nameIndex;
+  StringIndex cultureIndex;
+  StringIndex hashValueIndex;
+  StringIndex publicKeyIndex;
+  uint32_t    hash_alg;
+  int32_t     hash_len;
+  uint32_t    flags;
+  int32_t     major;
+  int32_t     minor;
+  int32_t     build;
+  int32_t     revision;
+  uint8_t     publicKeyToken[kPublicKeyByteLength];
+};
+
+struct Il2CppAssembly {
+  ImageIndex           imageIndex;
+  CustomAttributeIndex customAttributeIndex;
+  int32_t              referencedAssemblyStart;
+  int32_t              referencedAssemblyCount;
+  Il2CppAssemblyName   aname;
 };
 
 struct MethodInfo {
@@ -240,24 +275,38 @@ struct Il2CppDictionary {
 template <typename K, typename V>
 using Dictionary = Il2CppDictionary<K, V>;
 
-void  Il2CppAttach(const char *name = "libil2cpp.so");
-void *Il2CppGetImageByName(const char *image);
-void *Il2CppGetClassType(const char *image, const char *namespaze, const char *clazz);
-void *Il2CppCreateClassInstance(const char *image, const char *namespaze, const char *clazz);
-void *Il2CppCreateArray(const char *image, const char *namespaze, const char *clazz, size_t length);
+struct Il2CppImage {
+  const char   *name;
+  const char   *nameNoExt;
+  AssemblyIndex assemblyIndex;
 
-void Il2CppGetStaticFieldValue(const char *image, const char *namespaze, const char *clazz, const char *name,
-                               void *output);
-void Il2CppSetStaticFieldValue(const char *image, const char *namespaze, const char *clazz, const char *name,
-                               void *value);
+  TypeDefinitionIndex typeStart;
+  uint32_t            typeCount;
 
-void *Il2CppGetMethodOffset(const char *image, const char *namespaze, const char *clazz, const char *name,
-                            int argsCount = 0);
-void *Il2CppGetMethodOffset(const char *image, const char *namespaze, const char *clazz, const char *name, char **args,
-                            int argsCount);
+  TypeDefinitionIndex exportedTypeStart;
+  uint32_t            exportedTypeCount;
 
+  MethodIndex entryPointIndex;
+
+  mutable Il2CppNameToTypeDefinitionIndexHashTable *nameToClassHashTable;
+
+  uint32_t token;
+};
+
+void   Il2CppAttach(const char *name = "libil2cpp.so");
+void  *Il2CppGetImageByName(const char *image);
+void  *Il2CppGetClassType(const char *image, const char *namespaze, const char *clazz);
+void  *Il2CppCreateClassInstance(const char *image, const char *namespaze, const char *clazz);
+void  *Il2CppCreateArray(const char *image, const char *namespaze, const char *clazz, size_t length);
+void   Il2CppGetStaticFieldValue(const char *image, const char *namespaze, const char *clazz, const char *name,
+                                 void *output);
+void   Il2CppSetStaticFieldValue(const char *image, const char *namespaze, const char *clazz, const char *name,
+                                 void *value);
+void  *Il2CppGetMethodOffset(const char *image, const char *namespaze, const char *clazz, const char *name,
+                             int argsCount = 0);
+void  *Il2CppGetMethodOffset(const char *image, const char *namespaze, const char *clazz, const char *name, char **args,
+                             int argsCount);
 size_t Il2CppGetFieldOffset(const char *image, const char *namespaze, const char *clazz, const char *name);
 size_t Il2CppGetStaticFieldOffset(const char *image, const char *namespaze, const char *clazz, const char *name);
-
-bool Il2CppIsAssembliesLoaded();
+bool   Il2CppIsAssembliesLoaded();
 #endif

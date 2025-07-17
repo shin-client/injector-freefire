@@ -68,21 +68,19 @@ void WriteLogToFile(const std::string &timestamp, const std::string &level, cons
 
   std::ofstream logFile(g_LogFilePath, std::ios::out | std::ios::app);
   if (!logFile.is_open()) {
-    // Try alternative path if main path fails
     std::string altPath = "/data/data/com.dts.freefireth/zygisk_ff_logs.txt";
     logFile.open(altPath, std::ios::out | std::ios::app);
     if (!logFile.is_open()) {
-      return;  // Silently fail to avoid spam
+      return;
     }
-    g_LogFilePath = altPath;  // Update global path
+    g_LogFilePath = altPath;
   }
 
   try {
     logFile << "[" << timestamp << "] [" << level << "] " << message << std::endl;
-    logFile.flush();  // Ensure immediate write
+    logFile.flush();
     logFile.close();
   } catch (...) {
-    // Silently handle write errors
     logFile.close();
   }
 }
@@ -94,7 +92,6 @@ void SaveLogsToFile() {
   if (!logFile.is_open()) {
     LOGE("Failed to open log file for writing: %s", g_LogFilePath.c_str());
 
-    // Try alternative path
     std::string altPath = "/data/data/com.dts.freefiremax/zygisk_ff_logs.txt";
     LOGW("Trying alternative path: %s", altPath.c_str());
 
@@ -103,7 +100,7 @@ void SaveLogsToFile() {
       LOGE("Failed to open alternative log file path");
       return;
     }
-    g_LogFilePath = altPath;  // Update path if successful
+    g_LogFilePath = altPath;
     LOGI("Successfully switched to alternative log path");
   }
 
@@ -118,7 +115,6 @@ void SaveLogsToFile() {
       logFile << "[" << entry.timestamp << "] [" << entry.level << "] " << entry.message << std::endl;
       written++;
 
-      // Flush every 100 entries to ensure data is written
       if (written % 100 == 0) {
         logFile.flush();
       }
@@ -147,7 +143,6 @@ void AddLog(const char *level, const char *fmt, ...) {
   entry.level     = level;
   entry.message   = buffer;
 
-  // Set color based on log level
   if (strcmp(level, "ERROR") == 0) {
     entry.color = ImVec4(1.0f, 0.4f, 0.4f, 1.0f);  // Red
   } else if (strcmp(level, "WARN") == 0) {
@@ -160,10 +155,8 @@ void AddLog(const char *level, const char *fmt, ...) {
 
   g_LogBuffer.push_back(entry);
 
-  // Write to file immediately if auto-save is enabled
   WriteLogToFile(entry.timestamp, entry.level, entry.message);
 
-  // Keep buffer size under limit
   if (g_LogBuffer.size() > MAX_LOG_ENTRIES) {
     g_LogBuffer.erase(g_LogBuffer.begin());
   }
