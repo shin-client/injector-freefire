@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <android/input.h>
 
 #define targetLibName OBFUSCATE("libil2cpp.so")
 
@@ -59,6 +60,45 @@ int (*old_getHeight)(ANativeWindow *window);
 int hook_getHeight(ANativeWindow *window) {
   egl.screenHeight = old_getHeight(window);
   return old_getHeight(window);
+}
+
+int (*original_AInputQueue_getEvent)(AInputQueue *, AInputEvent **);
+int hooked_AInputQueue_getEvent(AInputQueue *queue, AInputEvent **event)
+{
+  int result = original_AInputQueue_getEvent(queue, event);
+  if (result >= 0 && *event)
+  {
+    int32_t type = AInputEvent_getType(*event);
+    if (type == AINPUT_EVENT_TYPE_MOTION)
+    {
+      int32_t action = AMotionEvent_getAction(*event) & AMOTION_EVENT_ACTION_MASK;
+      int32_t pointerIndex = (AMotionEvent_getAction(*event) & AMOTION_EVENT_ACTION_POINTER_INDEX_MASK) >> AMOTION_EVENT_ACTION_POINTER_INDEX_SHIFT;
+      float rawX = AMotionEvent_getX(*event, pointerIndex);
+      float rawY = AMotionEvent_getY(*event, pointerIndex);
+      float scaledX = (rawX * g_GlWidth) / egl.screenWidth;
+      float scaledY = (rawY * g_GlHeight) / egl.screenHeight;
+      ImGuiIO &io = ImGui::GetIO();
+      switch (action)
+      {
+      case AMOTION_EVENT_ACTION_DOWN:
+      case AMOTION_EVENT_ACTION_POINTER_DOWN:
+        io.MousePos = ImVec2(scaledX, scaledY);
+        io.MouseDown[0] = true;
+        break;
+      case AMOTION_EVENT_ACTION_UP:
+      case AMOTION_EVENT_ACTION_POINTER_UP:
+        io.MousePos = ImVec2(scaledX, scaledY);
+        io.MouseDown[0] = false;
+        break;
+      case AMOTION_EVENT_ACTION_MOVE:
+        io.MousePos = ImVec2(scaledX, scaledY);
+        break;
+      default:
+        break;
+      }
+    }
+  }
+  return result;
 }
 
 void InitHooks() {

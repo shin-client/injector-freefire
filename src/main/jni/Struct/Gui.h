@@ -15,11 +15,15 @@
 #include "ImGui/backends/imgui_impl_opengl3.h"
 #include "ImGui/box_shadow.h"
 #include "ImGui/fonts/Roboto-Regular.h"
+#include "ImGui/imgui_image.h"
 #include "imgui.h"
 #include "main.h"
 
+
 // Global variables
+TextureInfo        LogoPIC;
 inline static bool g_IsSetup = false;
+inline static bool IsMenuOpen = false;
 inline int         prevWidth, prevHeight;
 inline float       density = -1;
 inline ImFont     *font;
@@ -147,7 +151,8 @@ void SetupImgui() {
   font_cfg.SizePixels = 22.0f;
 
   ImFont *roboto_font = io.Fonts->AddFontFromMemoryTTF((void *)Roboto_Regular, sizeof(Roboto_Regular), 22.0f, &font_cfg,
-                                                       io.Fonts->GetGlyphRangesDefault());
+                                                       io.Fonts->GetGlyphRangesVietnamese());
+  io.Fonts->GetGlyphRangesVietnamese();
 
   if (!roboto_font) {
     io.Fonts->AddFontDefault(&font_cfg);
@@ -162,7 +167,7 @@ std::string getClipboard() {
   JNIEnv     *env = nullptr;
 
   if (jvm->AttachCurrentThread(&env, NULL) != JNI_OK) {
-    return result;  // Return empty string on failure
+    return result;
   }
 
   jclass looperClass = env->FindClass(OBFUSCATE("android/os/Looper"));

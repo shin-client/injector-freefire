@@ -1,3 +1,4 @@
+#include <android/native_window.h>
 #include <dlfcn.h>
 #include <jni.h>
 #include <sys/system_properties.h>
@@ -17,6 +18,7 @@
 #include "Includes/Hooks.h"
 #include "Includes/Macros.h"
 #include "Includes/Utils.h"
+// #include "Includes/android_native_app_glue.h"
 #include "Includes/config.h"
 #include "KittyMemory/KittyInclude.h"
 #include "Struct/Class.h"
@@ -25,16 +27,21 @@
 #include "Struct/obfuscate.h"
 #include "Unity/Il2Cpp.h"
 
-extern int  g_GlWidth, g_GlHeight;
-ElfScanner  g_il2cppELF;
-uintptr_t   g_Il2cppBase;
-std::string processName;
+extern int   g_GlWidth, g_GlHeight;
+ElfScanner   g_il2cppELF;
+uintptr_t    g_Il2cppBase;
+std::string  processName;
+// android_app *g_App = nullptr;
 
 EGLBoolean (*old_eglSwapBuffers)(EGLDisplay dpy, EGLSurface surface);
 
 EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
   eglQuerySurface(dpy, surface, EGL_WIDTH, &g_GlWidth);
   eglQuerySurface(dpy, surface, EGL_HEIGHT, &g_GlHeight);
+
+  // if (!g_App || !g_App->config) return old_eglSwapBuffers(dpy, surface);
+  // egl.screenWidth  = ANativeWindow_getWidth(g_App->window);
+  // egl.screenHeight = ANativeWindow_getHeight(g_App->window);
 
   if (!g_IsSetup) {
     prevWidth  = g_GlWidth;
@@ -51,8 +58,25 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
 
   DrawESP(g_GlWidth, g_GlHeight);
   RenderLogsWindow();
-  ImGui::SetNextWindowSize(ImVec2((float)g_GlWidth * 0.35f, (float)g_GlHeight * 0.50f), ImGuiCond_Once);
-  if (ImGui::Begin(OBFUSCATE("NgocDev FF Việt Nam"), 0, ImGuiWindowFlags_NoBringToFrontOnFocus)) {
+  ImGui::SetNextWindowSize(ImVec2((float)g_GlWidth * 0.1f, (float)g_GlHeight * 0.2f), ImGuiCond_Once);
+  if (ImGui::Begin("**CROZN", 0,
+                   ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoSavedSettings)) {
+    ImGui::PushStyleColor(ImGuiCol_Button, {0, 0, 0, 0});
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, {0, 0, 0, 0});
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, {0, 0, 0, 0});
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
+    if (ImGui::ImageButton((ImTextureID)LogoPIC.textureId, ImVec2(75, 75))) {
+      IsMenuOpen = true;
+    }
+    ImGui::PopStyleColor(3);
+    ImGui::PopStyleVar(1);
+  }
+
+  // ImGui::SetNextWindowSize(ImVec2((float)g_GlWidth * 0.35f, (float)g_GlHeight * 0.50f), ImGuiCond_Once);
+  if (IsMenuOpen) {
+    ImGui::Begin(
+        OBFUSCATE("NgocDev FF Việt Nam"), &IsMenuOpen,
+        ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBringToFrontOnFocus);
     SetShadowSettings();
     ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
 
