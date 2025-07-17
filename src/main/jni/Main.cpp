@@ -11,7 +11,6 @@
 #include "ImGui/Fonts/Roboto-Regular.h"
 #include "ImGui/backends/imgui_impl_android.h"
 #include "ImGui/backends/imgui_impl_opengl3.h"
-#include "ImGui/box_shadow.h"
 #include "ImGui/imgui.h"
 #include "Includes/ByNameModding.h"
 #include "Includes/Hooks.h"
@@ -20,14 +19,14 @@
 #include "Includes/config.h"
 #include "KittyMemory/KittyInclude.h"
 #include "Struct/Class.h"
-#include "Struct/Logger.h"
 #include "Struct/Gui.h"
+#include "Struct/Logger.h"
 #include "Struct/obfuscate.h"
 #include "Unity/Il2Cpp.h"
 
-extern int g_GlWidth, g_GlHeight;
-ElfScanner g_il2cppELF;
-uintptr_t  g_Il2cppBase;
+extern int  g_GlWidth, g_GlHeight;
+ElfScanner  g_il2cppELF;
+uintptr_t   g_Il2cppBase;
 std::string processName;
 
 EGLBoolean (*old_eglSwapBuffers)(EGLDisplay dpy, EGLSurface surface);
@@ -82,22 +81,9 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
 
   ImGui::SetNextWindowSize(ImVec2((float)g_GlWidth * 0.35f, (float)g_GlHeight * 0.50f), ImGuiCond_Once);
   if (ImGui::Begin(OBFUSCATE("NgocDev FF Việt Nam"), 0, ImGuiWindowFlags_NoBringToFrontOnFocus)) {
+    SetShadowSettings();
     ImGui::Text("FPS: %.1f", ImGui::GetIO().Framerate);
     ImGui::Text("%s", processName.c_str());
-
-    RectangleShadowSettings shadowSettings;
-    shadowSettings.rectSize              = ImVec2(ImGui::GetWindowSize().x - 5, ImGui::GetWindowSize().y - 5);
-    shadowSettings.sigma                 = 10;
-    shadowSettings.padding               = ImVec2(3.f, 3.f);
-    shadowSettings.rectPos               = shadowSettings.padding;
-    shadowSettings.rings                 = 4;
-    shadowSettings.spacingBetweenRings   = 3;
-    shadowSettings.samplesPerCornerSide  = 3;
-    shadowSettings.spacingBetweenSamples = 15;
-    shadowSettings.shadowColor           = ImVec4(0, 188, 212, 1);
-    shadowSettings.shadowSize            = ImVec2(0, 0);
-
-    drawRectangleShadowVerticesAdaptive(shadowSettings);
 
     ImGui::Columns(2);
     ImGui::SetColumnOffset(1, 145);

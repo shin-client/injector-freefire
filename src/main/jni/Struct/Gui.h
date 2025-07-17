@@ -11,10 +11,11 @@
 
 #include <vector>
 
-#include "ImGui/fonts/Roboto-Regular.h"
-#include "imgui.h"
 #include "ImGui/backends/imgui_impl_android.h"
 #include "ImGui/backends/imgui_impl_opengl3.h"
+#include "ImGui/box_shadow.h"
+#include "ImGui/fonts/Roboto-Regular.h"
+#include "imgui.h"
 #include "main.h"
 
 // Global variables
@@ -111,6 +112,22 @@ void SetDarkGrayTheme() {
   style->ItemSpacing               = ImVec2(8.0f, 4.0f);
 }
 
+void SetShadowSettings() {
+  RectangleShadowSettings shadowSettings;
+  shadowSettings.rectSize              = ImVec2(ImGui::GetWindowSize().x - 5, ImGui::GetWindowSize().y - 5);
+  shadowSettings.sigma                 = 10;
+  shadowSettings.padding               = ImVec2(3.f, 3.f);
+  shadowSettings.rectPos               = shadowSettings.padding;
+  shadowSettings.rings                 = 4;
+  shadowSettings.spacingBetweenRings   = 3;
+  shadowSettings.samplesPerCornerSide  = 3;
+  shadowSettings.spacingBetweenSamples = 15;
+  shadowSettings.shadowColor           = ImVec4(0, 188, 212, 1);
+  shadowSettings.shadowSize            = ImVec2(0, 0);
+
+  drawRectangleShadowVerticesAdaptive(shadowSettings);
+}
+
 void SetupImgui() {
   IMGUI_CHECKVERSION();
 
@@ -129,7 +146,7 @@ void SetupImgui() {
   font_cfg.SizePixels = 22.0f;
 
   ImFont *roboto_font = io.Fonts->AddFontFromMemoryTTF((void *)Roboto_Regular, sizeof(Roboto_Regular), 22.0f, &font_cfg,
-                                                     io.Fonts->GetGlyphRangesDefault());
+                                                       io.Fonts->GetGlyphRangesDefault());
 
   if (!roboto_font) {
     io.Fonts->AddFontDefault(&font_cfg);
