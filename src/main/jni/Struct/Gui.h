@@ -15,15 +15,18 @@
 #include "ImGui/backends/imgui_impl_opengl3.h"
 #include "ImGui/box_shadow.h"
 #include "ImGui/fonts/Roboto-Regular.h"
-#include "ImGui/images/picsart.h"
+// #include "ImGui/images/picsart.h"
 #include "ImGui/imgui_image.h"
 #include "imgui.h"
 #include "main.h"
 
-
 // Global variables
-TextureInfo        LogoPIC;
-inline static bool g_IsSetup = false;
+// TextureInfo        LogoPIC;
+GLuint             texture;
+int                imgWidth = 0, imgHeight = 0;
+float              maxSize = 80.0f;
+ImVec2             imageSize;
+inline static bool g_IsSetup  = false;
 inline static bool IsMenuOpen = false;
 inline int         prevWidth, prevHeight;
 inline float       density = -1;
@@ -35,7 +38,6 @@ extern JNIEnv  *genv;
 extern jclass   UnityPlayer_cls;
 extern jfieldID UnityPlayer_CurrentActivity_fid;
 
-// Input hook function - captures input events for ImGui
 inline void (*origInput)(void *, void *, void *);
 
 inline void myInput(void *thiz, void *ex_ab, void *ex_ac) {
@@ -143,12 +145,19 @@ void SetupImgui() {
   io.DisplaySize    = ImVec2((float)g_GlWidth, (float)g_GlHeight);
 
   // ImGui::StyleColorsDark();
+  LoadTexture("/data/data/com.dts.freefireth/menulogo.png", &texture, imgWidth, imgHeight);
+  float aspect = (float)imgHeight / (float)imgWidth;
+  if (imgWidth > imgHeight) {
+    imageSize = ImVec2(maxSize, maxSize * aspect);
+  } else {
+    imageSize = ImVec2(maxSize / aspect, maxSize);
+  }
 
   SetDarkGrayTheme();
 
   ImGui_ImplOpenGL3_Init("#version 300 es");
 
-  LogoPIC = CreateTexture(picsart_data, sizeof(picsart_data));
+  // LogoPIC = CreateTexture(anime_data, sizeof(anime_data));
 
   ImFontConfig font_cfg;
   font_cfg.SizePixels = 22.0f;

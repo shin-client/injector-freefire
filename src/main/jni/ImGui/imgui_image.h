@@ -1,3 +1,4 @@
+#define STB_IMAGE_IMPLEMENTATION
 #include "imgui.h"
 #include "imgui/stb_image.h"
 
@@ -9,9 +10,9 @@ struct TextureInfo {
   int         h;
 };
 
-TextureInfo CreateTexture(const unsigned char *buf, int len) {
+TextureInfo CreateTexture(const unsigned char* buf, int len) {
   TextureInfo    image;
-  unsigned char *image_data = stbi_load_from_memory(buf, len, &image.w, &image.h, NULL, 4);
+  unsigned char* image_data = stbi_load_from_memory(buf, len, &image.w, &image.h, NULL, 4);
   if (image_data == NULL) perror("File not found!");
   GLuint image_texture;
   glGenTextures(1, &image_texture);
@@ -27,4 +28,19 @@ TextureInfo CreateTexture(const unsigned char *buf, int len) {
   stbi_image_free(image_data);
   image.textureId = (ImTextureID)image_texture;
   return image;
+}
+
+void LoadTexture(const char* path, GLuint* texture, int& w, int& h) {
+  int            width, height, channels;
+  unsigned char* data = stbi_load(path, &width, &height, &channels, 4);
+  if (data) {
+    glGenTextures(1, texture);
+    glBindTexture(GL_TEXTURE_2D, *texture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    stbi_image_free(data);
+    w = width;
+    h = height;
+  }
 }

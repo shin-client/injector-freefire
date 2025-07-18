@@ -26,10 +26,11 @@
 #include "Struct/obfuscate.h"
 #include "Unity/Il2Cpp.h"
 
-extern int  g_GlWidth, g_GlHeight;
-ElfScanner  g_il2cppELF;
-uintptr_t   g_Il2cppBase;
-std::string processName;
+extern int    g_GlWidth, g_GlHeight;
+extern ImVec2 imageSize;
+ElfScanner    g_il2cppELF;
+uintptr_t     g_Il2cppBase;
+std::string   processName;
 
 EGLBoolean (*old_eglSwapBuffers)(EGLDisplay dpy, EGLSurface surface);
 
@@ -56,18 +57,26 @@ EGLBoolean hook_eglSwapBuffers(EGLDisplay dpy, EGLSurface surface) {
 
   DrawESP(g_GlWidth, g_GlHeight);
   RenderLogsWindow();
-  ImGui::SetNextWindowPos(ImVec2(50, 50), ImGuiCond_Once);
+  static ImVec2 menuPos = ImVec2(50, 50);
+  ImGui::SetNextWindowPos(menuPos, ImGuiCond_Always);
   // ImGui::SetNextWindowSize(ImVec2((float)g_GlWidth * 0.1f, (float)g_GlHeight * 0.1f), ImGuiCond_Once);
   if (ImGui::Begin(OBFUSCATE("NgocDev"), 0,
                    ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoSavedSettings)) {
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+    ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
     ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 100.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
-
-    if (ImGui::ImageButton((ImTextureID)LogoPIC.textureId, ImVec2(80, 80))) {
+    if (ImGui::ImageButton((void *)(intptr_t)texture, imageSize)) {
       IsMenuOpen = !IsMenuOpen;
     }
+    if (ImGui::IsItemActive() && ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
+      ImVec2 delta = ImGui::GetIO().MouseDelta;
+      menuPos.x += delta.x;
+      menuPos.y += delta.y;
+    }
 
+    ImGui::PopStyleColor(2);
     ImGui::PopStyleVar(3);
     ImGui::End();
   }
