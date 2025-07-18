@@ -14,7 +14,6 @@
 #include "ImGui/backends/imgui_impl_android.h"
 #include "ImGui/backends/imgui_impl_opengl3.h"
 #include "ImGui/imgui.h"
-#include "Includes/ByNameModding.h"
 #include "Includes/Hooks.h"
 #include "Includes/Macros.h"
 #include "Includes/Utils.h"
@@ -23,13 +22,14 @@
 #include "Struct/Class.h"
 #include "Struct/Gui.h"
 #include "Struct/Logger.h"
+#include "Struct/Patches.h"
 #include "Struct/obfuscate.h"
 #include "Unity/Il2Cpp.h"
 
 extern int    g_GlWidth, g_GlHeight;
 extern ImVec2 imageSize;
 ElfScanner    g_il2cppELF;
-uintptr_t     g_Il2cppBase;
+uintptr_t     g_Il2cppBase = 0;
 std::string   processName;
 
 EGLBoolean (*old_eglSwapBuffers)(EGLDisplay dpy, EGLSurface surface);
@@ -251,12 +251,13 @@ void hack_thread(pid_t pid) {
   }
 
   LOGI("il2cppBase: 0x%" PRIxPTR, g_Il2cppBase);
-  LOGD("Waiting 5 seconds before attachment...");
-  sleep(5);
+  LOGD("Waiting 10 seconds before attachment...");
+  sleep(10);
 
   Il2CppAttach();
   LOGI("IL2CPP attached successfully");
 
+  initPatch();
   StartGUI();
 }
 

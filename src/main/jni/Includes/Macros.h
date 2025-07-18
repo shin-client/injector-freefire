@@ -7,13 +7,15 @@
 #else
 #include <Substrate/CydiaSubstrate.h>
 #include <Substrate/SubstrateHook.h>
-
 #endif
+
 #include <vector>
 
 #include "KittyMemory/MemoryPatch.h"
 #include "Struct/Logger.h"
 #include "Struct/Obfuscate.h"
+
+#define targetLibName OBFUSCATE("libil2cpp.so")
 
 void hook(void *offset, void *ptr, void **orig) {
 #if defined(__aarch64__)

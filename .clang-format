@@ -5,3 +5,4 @@ AlignConsecutiveAssignments: true
 AlignConsecutiveDeclarations: true
 FixNamespaceComments: false
 SeparateDefinitionBlocks: Always
+NamespaceIndentation: All

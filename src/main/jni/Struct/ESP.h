@@ -213,7 +213,7 @@ std::vector<void *> GetAllEnemies() {
     if (!LocalPlayer) return enemies;
 
     monoDictionary<uint8_t *, void **> *players =
-        *(monoDictionary<uint8_t *, void **> **)((uintptr_t)get_MatchGame + ListPlayer);
+        *(monoDictionary<uint8_t *, void **> **)((uintptr_t)get_MatchGame + Offset::PlayerSystem::ListPlayer);
     if (!players) return enemies;
 
     enemies.reserve(16);
