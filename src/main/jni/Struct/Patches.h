@@ -20,106 +20,128 @@ inline void addNewPatch(uintptr_t offset, const char* hexPattern, bool* setting)
 }
 
 inline void initPatch() {
-  auto assemblyCSharp = IL2CPP::Class::Find("Assembly-CSharp", "", "");
-  auto unityEngine    = IL2CPP::Class::Find("UnityEngine", "", "");
-  auto mscorlib       = IL2CPP::Class::Find("mscorlib", "", "");
+  // Camera
+  Offset::Camera::get_main = (uintptr_t)Il2CppGetMethodOffset(OBFUSCATE("UnityEngine.dll"), OBFUSCATE("UnityEngine"),
+                                                              OBFUSCATE("Camera"), OBFUSCATE("get_main"));
+  Offset::Camera::WorldToScreenPoint = (uintptr_t)Il2CppGetMethodOffset(
+      OBFUSCATE("UnityEngine.dll"), OBFUSCATE("UnityEngine"), OBFUSCATE("Camera"), OBFUSCATE("WorldToScreenPoint"), 1);
+  Offset::Camera::get_fieldOfView = (uintptr_t)Il2CppGetMethodOffset(
+      OBFUSCATE("UnityEngine.dll"), OBFUSCATE("UnityEngine"), OBFUSCATE("Camera"), OBFUSCATE("get_fieldOfView"));
+  Offset::Camera::set_fieldOfView = (uintptr_t)Il2CppGetMethodOffset(
+      OBFUSCATE("UnityEngine.dll"), OBFUSCATE("UnityEngine"), OBFUSCATE("Camera"), OBFUSCATE("set_fieldOfView"), 1);
 
-  LOGI("initPatch DONE");
-  // // Camera
-  // auto cameraClass         = IL2CPP::Class::Find("UnityEngine", "", "Camera");
-  // Offset::Camera::get_main = (uintptr_t)cameraClass.GetMethod<void*>("get_main").info->methodPointer;
-  // Offset::Camera::WorldToScreenPoint =
-  //     (uintptr_t)cameraClass.GetMethod<void*>("WorldToScreenPoint", 1).info->methodPointer;
-  // Offset::Camera::get_fieldOfView = (uintptr_t)cameraClass.GetMethod<void*>("get_fieldOfView").info->methodPointer;
-  // Offset::Camera::set_fieldOfView = (uintptr_t)cameraClass.GetMethod<void*>("set_fieldOfView", 1).info->methodPointer;
+  // Input
+  Offset::Input::get_touchCount = (uintptr_t)Il2CppGetMethodOffset(
+      OBFUSCATE("UnityEngine.dll"), OBFUSCATE("UnityEngine"), OBFUSCATE("Input"), OBFUSCATE("get_touchCount"));
+  Offset::Input::GetTouch = (uintptr_t)Il2CppGetMethodOffset(OBFUSCATE("UnityEngine.dll"), OBFUSCATE("UnityEngine"),
+                                                             OBFUSCATE("Input"), OBFUSCATE("GetTouch"), 1);
+  Offset::Input::get_mousePosition = (uintptr_t)Il2CppGetMethodOffset(
+      OBFUSCATE("UnityEngine.dll"), OBFUSCATE("UnityEngine"), OBFUSCATE("Input"), OBFUSCATE("get_mousePosition"));
 
-  // // Input
-  // auto inputClass                  = IL2CPP::Class::Find("UnityEngine", "", "Input");
-  // Offset::Input::get_touchCount    = (uintptr_t)inputClass.GetMethod<void*>("get_touchCount").info->methodPointer;
-  // Offset::Input::GetTouch          = (uintptr_t)inputClass.GetMethod<void*>("GetTouch", 1).info->methodPointer;
-  // Offset::Input::get_mousePosition = (uintptr_t)inputClass.GetMethod<void*>("get_mousePosition").info->methodPointer;
+  // Screen
+  Offset::Screen::get_width   = (uintptr_t)Il2CppGetMethodOffset(OBFUSCATE("UnityEngine.dll"), OBFUSCATE("UnityEngine"),
+                                                                 OBFUSCATE("Screen"), OBFUSCATE("get_width"));
+  Offset::Screen::get_height  = (uintptr_t)Il2CppGetMethodOffset(OBFUSCATE("UnityEngine.dll"), OBFUSCATE("UnityEngine"),
+                                                                 OBFUSCATE("Screen"), OBFUSCATE("get_height"));
+  Offset::Screen::get_density = (uintptr_t)Il2CppGetMethodOffset(OBFUSCATE("UnityEngine.dll"), OBFUSCATE("UnityEngine"),
+                                                                 OBFUSCATE("Screen"), OBFUSCATE("get_dpi"));
 
-  // // Screen
-  // auto screenClass            = IL2CPP::Class::Find("UnityEngine", "", "Screen");
-  // Offset::Screen::get_width   = (uintptr_t)screenClass.GetMethod<void*>("get_width").info->methodPointer;
-  // Offset::Screen::get_height  = (uintptr_t)screenClass.GetMethod<void*>("get_height").info->methodPointer;
-  // Offset::Screen::get_density = (uintptr_t)screenClass.GetMethod<void*>("get_dpi").info->methodPointer;
+  // Transform
+  Offset::Transform::GetPosition =
+      (uintptr_t)Il2CppGetMethodOffset(OBFUSCATE("UnityEngine.dll"), OBFUSCATE("UnityEngine"), OBFUSCATE("Transform"),
+                                       OBFUSCATE("get_position_Injected"), 1);
+  Offset::Transform::SetPosition =
+      (uintptr_t)Il2CppGetMethodOffset(OBFUSCATE("UnityEngine.dll"), OBFUSCATE("UnityEngine"), OBFUSCATE("Transform"),
+                                       OBFUSCATE("set_position_Injected"), 1);
+  Offset::Transform::get_position = (uintptr_t)Il2CppGetMethodOffset(
+      OBFUSCATE("UnityEngine.dll"), OBFUSCATE("UnityEngine"), OBFUSCATE("Transform"), OBFUSCATE("get_position"), 0);
+  Offset::Transform::Position = (uintptr_t)Il2CppGetMethodOffset(OBFUSCATE("UnityEngine.dll"), OBFUSCATE("UnityEngine"),
+                                                                 OBFUSCATE("Transform"), OBFUSCATE("get_position"), 0);
+  Offset::Transform::Rotation = (uintptr_t)Il2CppGetMethodOffset(OBFUSCATE("UnityEngine.dll"), OBFUSCATE("UnityEngine"),
+                                                                 OBFUSCATE("Transform"), OBFUSCATE("get_rotation"), 0);
+  Offset::Transform::get_forward = (uintptr_t)Il2CppGetMethodOffset(
+      OBFUSCATE("UnityEngine.dll"), OBFUSCATE("UnityEngine"), OBFUSCATE("Transform"), OBFUSCATE("get_forward"), 0);
 
-  // // Transform
-  // auto transformClass = IL2CPP::Class::Find("UnityEngine", "", "Transform");
-  // Offset::Transform::GetPosition =
-  //     (uintptr_t)transformClass.GetMethod<void*>("get_position_Injected", 1).info->methodPointer;
-  // Offset::Transform::SetPosition =
-  //     (uintptr_t)transformClass.GetMethod<void*>("set_position_Injected", 1).info->methodPointer;
-  // Offset::Transform::get_position = (uintptr_t)transformClass.GetMethod<void*>("get_position", 0).info->methodPointer;
-  // Offset::Transform::Position     = (uintptr_t)transformClass.GetMethod<void*>("get_position", 0).info->methodPointer;
-  // Offset::Transform::Rotation     = (uintptr_t)transformClass.GetMethod<void*>("get_rotation", 0).info->methodPointer;
-  // Offset::Transform::get_forward  = (uintptr_t)transformClass.GetMethod<void*>("get_forward", 0).info->methodPointer;
+  // Component
+  Offset::Component::get_transform = (uintptr_t)Il2CppGetMethodOffset(
+      OBFUSCATE("UnityEngine.dll"), OBFUSCATE("UnityEngine"), OBFUSCATE("Component"), OBFUSCATE("get_transform"), 0);
 
-  // // Component
-  // auto componentClass              = IL2CPP::Class::Find("UnityEngine", "", "Component");
-  // Offset::Component::get_transform = (uintptr_t)componentClass.GetMethod<void*>("get_transform", 0).info->methodPointer;
-  // Offset::Component::Transform     = (uintptr_t)componentClass.GetMethod<void*>("get_transform", 0).info->methodPointer;
+  // Time
+  Offset::Time::get_deltaTime = (uintptr_t)Il2CppGetMethodOffset(OBFUSCATE("UnityEngine.dll"), OBFUSCATE("UnityEngine"),
+                                                                 OBFUSCATE("Time"), OBFUSCATE("get_deltaTime"), 0);
 
-  // // Time
-  // auto timeClass              = IL2CPP::Class::Find("UnityEngine", "", "Time");
-  // Offset::Time::get_deltaTime = (uintptr_t)timeClass.GetMethod<void*>("get_deltaTime", 0).info->methodPointer;
+  // Player
+  Offset::PlayerSystem::EnemyUpdate = (uintptr_t)Il2CppGetMethodOffset(
+      OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("Player"), OBFUSCATE("LateUpdate"), 0);
+  Offset::PlayerSystem::Head = (uintptr_t)Il2CppGetMethodOffset(
+      OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("Player"), OBFUSCATE("GetHeadTF"), 0);
+  Offset::PlayerSystem::HeadColider =
+      (uintptr_t)Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("Player"),
+                                       OBFUSCATE("get_HeadCollider"), 0);
+  Offset::PlayerSystem::MainCam =
+      (uintptr_t)Il2CppGetFieldOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("Player"),
+                                      OBFUSCATE("MainCameraTransform"));
+  Offset::PlayerSystem::ListPlayer = (uintptr_t)Il2CppGetFieldOffset(
+      OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("NFJPHMKKEBF"), OBFUSCATE("HOOCHDLKOOG"));
 
-  // // Player
-  // auto playerClass                  = IL2CPP::Class::Find("COW.GamePlay", "", "Player");
-  // Offset::PlayerSystem::EnemyUpdate = (uintptr_t)playerClass.GetMethod<void*>("LateUpdate", 0).info->methodPointer;
-  // Offset::PlayerSystem::Head        = (uintptr_t)playerClass.GetMethod<void*>("GetHeadTF", 0).info->methodPointer;
-  // Offset::PlayerSystem::HeadColider =
-  //     (uintptr_t)playerClass.GetMethod<void*>("get_HeadCollider", 0).info->methodPointer;
-  // Offset::PlayerSystem::MainCam = (uintptr_t)playerClass.GetField<void*>("MainCameraTransform").info->offset;
-  // Offset::PlayerSystem::ListPlayer =
-  //     (uintptr_t)IL2CPP::Class::Find("COW.GamePlay", "", "NFJPHMKKEBF").GetField<void*>("HOOCHDLKOOG").info->offset;
+  Offset::PlayerStatus::Visible = (uintptr_t)Il2CppGetMethodOffset(
+      OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("Player"), OBFUSCATE("IsVisible"), 0);
+  Offset::PlayerStatus::Team =
+      (uintptr_t)Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("Player"),
+                                       OBFUSCATE("IsLocalTeammate"), 0);
+  Offset::PlayerStatus::Die = (uintptr_t)Il2CppGetMethodOffset(
+      OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("Player"), OBFUSCATE("get_IsDieing"), 0);
+  Offset::PlayerStatus::LocalBool = (uintptr_t)Il2CppGetMethodOffset(
+      OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("Player"), OBFUSCATE("IsLocalPlayer"), 0);
 
-  // Offset::PlayerStatus::Visible   = (uintptr_t)playerClass.GetMethod<void*>("IsVisible", 0).info->methodPointer;
-  // Offset::PlayerStatus::Team      = (uintptr_t)playerClass.GetMethod<void*>("IsLocalTeammate", 0).info->methodPointer;
-  // Offset::PlayerStatus::Die       = (uintptr_t)playerClass.GetMethod<void*>("get_IsDieing", 0).info->methodPointer;
-  // Offset::PlayerStatus::LocalBool = (uintptr_t)playerClass.GetMethod<void*>("IsLocalPlayer", 0).info->methodPointer;
+  Offset::PlayerHealth::CurHP = (uintptr_t)Il2CppGetMethodOffset(
+      OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("Player"), OBFUSCATE("get_CurHP"), 0);
+  Offset::PlayerHealth::MaxHP = (uintptr_t)Il2CppGetMethodOffset(
+      OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("Player"), OBFUSCATE("get_MaxHP"), 0);
 
-  // Offset::PlayerHealth::CurHP = (uintptr_t)playerClass.GetMethod<void*>("get_CurHP", 0).info->methodPointer;
-  // Offset::PlayerHealth::MaxHP = (uintptr_t)playerClass.GetMethod<void*>("get_MaxHP", 0).info->methodPointer;
+  Offset::PlayerInfo::PlayerName = (uintptr_t)Il2CppGetMethodOffset(
+      OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("Player"), OBFUSCATE("get_NickName"), 0);
 
-  // Offset::PlayerInfo::PlayerName = (uintptr_t)playerClass.GetMethod<void*>("get_NickName", 0).info->methodPointer;
+  Offset::PlayerActions::Aim = (uintptr_t)Il2CppGetMethodOffset(
+      OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("Player"), OBFUSCATE("SetAimRotation"), 1);
+  Offset::PlayerActions::Scope = (uintptr_t)Il2CppGetMethodOffset(
+      OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("Player"), OBFUSCATE("get_IsSighting"), 0);
+  Offset::PlayerActions::Fire = (uintptr_t)Il2CppGetMethodOffset(
+      OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("Player"), OBFUSCATE("IsFiring"), 0);
 
-  // Offset::PlayerActions::Aim   = (uintptr_t)playerClass.GetMethod<void*>("SetAimRotation", 1).info->methodPointer;
-  // Offset::PlayerActions::Scope = (uintptr_t)playerClass.GetMethod<void*>("get_IsSighting", 0).info->methodPointer;
-  // Offset::PlayerActions::Fire  = (uintptr_t)playerClass.GetMethod<void*>("IsFiring", 0).info->methodPointer;
+  Offset::VehicleSystem::CarLocal = (uintptr_t)Il2CppGetMethodOffset(
+      OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("Player"), OBFUSCATE("VehicleIAmIn"), 0);
+  Offset::VehicleSystem::GetCar = (uintptr_t)Il2CppGetMethodOffset(
+      OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"), OBFUSCATE("Player"), OBFUSCATE("get_IsDriver"), 0);
 
-  // Offset::VehicleSystem::CarLocal = (uintptr_t)playerClass.GetMethod<void*>("VehicleIAmIn", 0).info->methodPointer;
-  // Offset::VehicleSystem::GetCar   = (uintptr_t)playerClass.GetMethod<void*>("get_IsDriver", 0).info->methodPointer;
+  Offset::GameManagement::Match = (uintptr_t)Il2CppGetMethodOffset(
+      OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW"), OBFUSCATE("GameFacade"), OBFUSCATE("CurrentMatch"), 0);
+  Offset::GameManagement::Local =
+      (uintptr_t)Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW"),
+                                       OBFUSCATE("UIHudDetectorController"), OBFUSCATE("GetLocalPlayer"), 0);
 
-  // Offset::GameManagement::Match =
-  //     (uintptr_t)IL2CPP::Class::Find("COW", "", "GameFacade").GetMethod<void*>("CurrentMatch", 0).info->methodPointer;
-  // Offset::GameManagement::Local = (uintptr_t)IL2CPP::Class::Find("COW", "", "UIHudDetectorController")
-  //                                     .GetMethod<void*>("GetLocalPlayer", 0)
-  //                                     .info->methodPointer;
+  Offset::PhysicsSystem::Raycast =
+      (uintptr_t)Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW.GamePlay"),
+                                       OBFUSCATE("JEAGCMACNNC"), OBFUSCATE("PLDCHDBCOBF"), 4);
 
-  // Offset::PhysicsSystem::Raycast = (uintptr_t)IL2CPP::Class::Find("COW.GamePlay", "", "JEAGCMACNNC")
-  //                                      .GetMethod<void*>("PLDCHDBCOBF", 4)
-  //                                      .info->methodPointer;
+  Offset::StringSystem::CharGet = (uintptr_t)Il2CppGetMethodOffset(OBFUSCATE("mscorlib.dll"), OBFUSCATE("System"),
+                                                                   OBFUSCATE("String"), OBFUSCATE("get_Chars"), 1);
 
-  // Offset::StringSystem::CharGet =
-  //     (uintptr_t)IL2CPP::Class::Find("System", "", "String").GetMethod<void*>("get_Chars", 1).info->methodPointer;
+  Offset::Bypass::Report1 =
+      (uintptr_t)Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW"),
+                                       OBFUSCATE("InteractionPopUtil"), OBFUSCATE("CreateReportPlayer"), 3);
+  Offset::Bypass::Report2 =
+      (uintptr_t)Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW"),
+                                       OBFUSCATE("UIHudMatchResultItemBaseController"), OBFUSCATE("SetReportData"), 4);
+  Offset::Bypass::Report3 =
+      (uintptr_t)Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW"), OBFUSCATE("UIModelVoice"),
+                                       OBFUSCATE("get_ReportedPlayerTimeDict"), 0);
+  Offset::Bypass::Report4 =
+      (uintptr_t)Il2CppGetMethodOffset(OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW"),
+                                       OBFUSCATE("InteractionPopUtil"), OBFUSCATE("CreateAddToBlackList"), 3);
 
-  // Offset::ResetGuest::Offset =
-  //     (uintptr_t)IL2CPP::Class::Find("COW", "", "GameConfig").GetMethod<void*>("get_ResetGuest", 0).info->methodPointer;
-
-  // Offset::Bypass::Report1 = (uintptr_t)IL2CPP::Class::Find("COW", "", "InteractionPopUtil")
-  //                               .GetMethod<void*>("CreateReportPlayer", 3)
-  //                               .info->methodPointer;
-  // Offset::Bypass::Report2 = (uintptr_t)IL2CPP::Class::Find("COW", "", "UIHudMatchResultItemBaseController")
-  //                               .GetMethod<void*>("SetReportData", 4)
-  //                               .info->methodPointer;
-  // Offset::Bypass::Report3 = (uintptr_t)IL2CPP::Class::Find("COW", "", "UIModelVoice")
-  //                               .GetMethod<void*>("get_ReportedPlayerTimeDict", 0)
-  //                               .info->methodPointer;
-  // Offset::Bypass::Report4 = (uintptr_t)IL2CPP::Class::Find("COW", "", "InteractionPopUtil")
-  //                               .GetMethod<void*>("CreateAddToBlackList", 3)
-  //                               .info->methodPointer;
+  Offset::GameManagement::ResetGuest = (uintptr_t)Il2CppGetMethodOffset(
+      OBFUSCATE("Assembly-CSharp.dll"), OBFUSCATE("COW"), OBFUSCATE("GameConfig"), OBFUSCATE("get_ResetGuest"));
 
   // patchOffset(targetLibName, Offset::PlayerActions::Aim, "C0035FD6", true);
   // patchOffset(targetLibName, Offset::PlayerActions::Scope, "C0035FD6", true);

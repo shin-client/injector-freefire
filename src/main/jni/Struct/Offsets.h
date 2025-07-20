@@ -29,7 +29,6 @@ namespace Offset {
   }
   namespace Component {
     uint64_t get_transform = 0x0;
-    uint64_t Transform = 0x0;
   }
   namespace Time {
     uint64_t get_deltaTime = 0x0;
@@ -66,15 +65,13 @@ namespace Offset {
   namespace GameManagement {
     uint64_t Match = 0x0;
     uint64_t Local = 0x0;
+    uint64_t ResetGuest = 0x0;
   }
   namespace PhysicsSystem {
     uint64_t Raycast = 0x0;
   }
   namespace StringSystem {
     uint64_t CharGet = 0x0;
-  }
-  namespace ResetGuest {
-    uint64_t Offset = 0x0;
   }
   namespace Bypass {
     uint64_t Report1 = 0x0;

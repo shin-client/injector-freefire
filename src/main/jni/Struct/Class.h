@@ -95,7 +95,7 @@ Vector3 get_position(void *player) {
 }
 
 static void *Component_GetTransform(void *player) {
-  void *(*_Component_GetTransform)(void *component) = (void *(*)(void *))(Offset::Component::Transform);
+  void *(*_Component_GetTransform)(void *component) = (void *(*)(void *))(Offset::Component::get_transform);
   return _Component_GetTransform(player);
 }
 
@@ -140,7 +140,7 @@ static bool (*orig_ResetGuest)();
 static bool fake_ResetGuest() { return true; }
 
 void Patch_ResetGuest_Hook() {
-  void *resetGuestAddr = (void *)(Offset::ResetGuest::Offset);
+  void *resetGuestAddr = (void *)(Offset::GameManagement::ResetGuest);
   LOGD("resetGuestAddr: %p", resetGuestAddr);
   DobbyHook(resetGuestAddr, (dobby_dummy_func_t)fake_ResetGuest, (dobby_dummy_func_t *)&orig_ResetGuest);
 }
